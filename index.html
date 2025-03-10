@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marvel Multiverse Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Lexend', sans-serif;
+            color: #ffffff;
+            background-color: #f2e5e5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: scroll; /* Enable vertical scroll */
+        }
+
+        /* Circle Animation Background (Inspired by provided code) */
+        .area{
+            background: linear-gradient(to left, #D62828, #FCBF49); /* Marvel-ish gradient */
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .circles{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .circles li{
+            position: absolute;
+            display: block;
+            list-style: none;
+            width: 20px;
+            height: 20px;
+            background: rgba(200, 194, 194, 0.250);
+            animation: animate 20s linear infinite; /* Adjusted animation speed */
+            bottom: -150px;
+            border-radius: 50%; /* Make them circles */
+        }
+
+        .circles li:nth-child(1){
+            left: 25%;
+            width: 60px;
+            height: 60px;
+            animation-delay: 0s;
+        }
+        .circles li:nth-child(2){
+            left: 10%;
+            width: 30px;
+            height: 30px;
+            animation-delay: 1.5s;
+            animation-duration: 12s;
+        }
+        .circles li:nth-child(3){
+            left: 70%;
+            width: 40px;
+            height: 40px;
+            animation-delay: 3.5s;
+        }
+        .circles li:nth-child(4){
+            left: 40%;
+            width: 50px;
+            height: 50px;
+            animation-delay: 0s;
+            animation-duration: 18s;
+        }
+        .circles li:nth-child(5){
+            left: 65%;
+            width: 25px;
+            height: 25px;
+            animation-delay: 1s;
+        }
+        .circles li:nth-child(6){
+            left: 75%;
+            width: 70px;
+            height: 70px;
+            animation-delay: 2.5s;
+        }
+        .circles li:nth-child(7){
+            left: 35%;
+            width: 90px;
+            height: 90px;
+            animation-delay: 5s;
+        }
+        .circles li:nth-child(8){
+            left: 50%;
+            width: 35px;
+            height: 35px;
+            animation-delay: 10s;
+            animation-duration: 30s;
+        }
+        .circles li:nth-child(9){
+            left: 20%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 2.5s;
+            animation-duration: 25s;
+        }
+        .circles li:nth-child(10){
+            left: 85%;
+            width: 80px;
+            height: 80px;
+            animation-delay: 0s;
+            animation-duration: 10s;
+        }
+
+        @keyframes animate {
+            0%{
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100%{
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Header and Navigation */
+        header {
+            width: 100%;
+            max-width: 960px;
+            padding: 20px 40px;
+            background-color: rgba(100, 20, 20, 0.6);
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 1.8em;
+            margin: 0;
+            color: #f0f0f0;
+        }
+
+        header nav {
+            display: flex;
+        }
+
+        header nav a {
+            color: #ddd;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-left: 10px;
+            background-color: #f78000;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Added transform transition */
+            position: relative; /* For pseudo-element animation */
+            overflow: hidden; /* Clip overflow for animation effect */
+        }
+
+        header nav a:hover {
+            background-color: #D62828;
+        }
+
+        header nav a:active {
+            transform: scale(0.95); /* Click animation - scale down */
+        }
+
+
+        .container {
+            max-width: 960px;
+            width: 100%;
+            padding: 40px;
+            background-color: rgba(100, 20, 20, 0.6);
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 2em;
+            color: #e0e0e0;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #d0d0d0;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        li {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #FCBF49;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        li h3 {
+            font-size: 1.5em;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        li p {
+            font-size: 1em;
+            color: #ffffff;
+        }
+
+        strong {
+            color: #FCBF49;
+        }
+
+        footer {
+            width: 100%;
+            max-width: 960px;
+            padding: 20px 40px;
+            background-color: rgba(100, 20, 20, 0.6);
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            color: #ccc;
+            font-size: 0.9em;
+        }
+
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+                flex-direction: column; /* Stack header items */
+                align-items: center; /* Center align in mobile */
+                text-align: center; /* Center text in header */
+            }
+            header h1 {
+                margin-bottom: 10px;
+                font-size: 1.6em;
+            }
+            header nav {
+                flex-direction: row; /* Buttons in row on mobile */
+                justify-content: center; /* Center buttons horizontally */
+                width: 100%; /* Take full width for button row */
+                margin-top: 10px; /* Space below header title */
+            }
+            header nav a {
+                margin-left: 5px; /* Reduced left margin */
+                margin-right: 5px; /* Add right margin for spacing */
+                margin-bottom: 0; /* No bottom margin */
+            }
+            .container {
+                padding: 20px;
+            }
+            h2 {
+                font-size: 1.6em;
+            }
+            p, li p {
+                font-size: 1em;
+            }
+            footer {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="area" >
+    <ul class="circles">
+        <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
+    </ul>
+</div>
+
+<header>
+    <h1>Marvel Multiverse Explorer</h1>
+    <nav>
+        <a href="Pages/marvel_movies.html">Marvel Movies</a>
+        <a href="#">Marvel Series</a>
+    </nav>
+</header>
+
+<div class="container">
+    <h2>Marvel Universes and Their Real-World Durations</h2>
+   
+    <ul>
+        <li>
+            <h3>Marvel Cinematic Universe (MCU) (Earth-199999)</h3>
+            <p><strong>Duration:</strong> 2008 – Present (Ongoing)</p>
+            <p><strong>Description:</strong> The primary, interconnected universe of Marvel Studios' films and Disney+ series. It features the Avengers, Guardians of the Galaxy, and many other heroes. The main universe of the current phase of the MCU, called the Multiverse Saga, is focused on the dangers of the multiverse.</p>
+        </li>
+        <li>
+            <h3>Sony's Spider-Man Universe (SSU) (Earth-68899)</h3>
+            <p><strong>Duration:</strong> 2018 – Present (Ongoing)</p>
+            <p><strong>Description:</strong> Sony Pictures' universe focusing on Spider-Man-related characters, including Venom, Morbius, Madame Web and Kraven the Hunter. It exists alongside the MCU, with occasional crossovers facilitated by the multiverse.</p>
+        </li>
+        <li>
+            <h3>20th Century Fox X-Men Universe (Various Earths, including Earth-10005)</h3>
+            <p><strong>Duration:</strong> 2000 – 2020</p>
+            <p><strong>Description:</strong> The universe of the X-Men, Deadpool, and Fantastic Four films produced by 20th Century Fox. It had its own distinct continuity, now being integrated into the MCU.</p>
+        </li>
+        <li>
+            <h3>Netflix Marvel Universe (Earth-1218)</h3>
+            <p><strong>Duration:</strong> 2015 – 2019</p>
+            <p><strong>Description:</strong> The street-level universe of the Netflix Marvel series, including Daredevil, Jessica Jones, Luke Cage, Iron Fist, The Defenders, and The Punisher. While initially having loose connections to the MCU, characters are now appearing in the main MCU.</p>
+        </li>
+        <li>
+            <h3>Sam Raimi Spider-Man Universe (Earth-96283)</h3>
+            <p><strong>Duration:</strong> 2002 – 2007 (with a brief revival in 2021)</p>
+            <p><strong>Description:</strong> The universe of the early 2000s Spider-Man trilogy starring Tobey Maguire. It's a self-contained universe with its own unique storyline.</p>
+        </li>
+        <li>
+            <h3>"The Amazing Spider-Man" Universe (Earth-120703)</h3>
+            <p><strong>Duration:</strong> 2012 – 2014 (with a brief revival in 2021)</p>
+            <p><strong>Description:</strong> The universe of the two "The Amazing Spider-Man" films starring Andrew Garfield. It's another distinct Spider-Man universe.</p>
+        </li>
+        <li>
+            <h3>The Spider-Verse (Various Earths, primarily Earth-616, Earth-1610, and Earth-65)</h3>
+            <p><strong>Duration:</strong> 2018 - Present (Ongoing)</p>
+            <p><strong>Description:</strong> This primarily animated universe, featured in "Spider-Man: Into the Spider-Verse" and "Spider-Man: Across the Spider-Verse", showcases various Spider-People from different dimensions. It has made some minor live action connections.</p>
+        </li>
+        <li>
+            <h3>Marvel Animated Universe (Various Earths)</h3>
+            <p><strong>Duration:</strong> 1992 - Present (Intermittent)</p>
+            <p><strong>Description:</strong> This encompasses a wide range of animated Marvel series, including "X-Men: The Animated Series," "Spider-Man: The Animated Series," and various others. Each series often exists in its own separate continuity. This is intermittent, as different animated series appear at different times.</p>
+        </li>
+        <li>
+            <h3>What If...? Universe(s) (Various Earths)</h3>
+            <p><strong>Duration:</strong> 2021 - Present (Ongoing)</p>
+            <p><strong>Description:</strong> The animated Disney+ series "What If...?" explores alternate realities where key moments in the MCU played out differently. Each episode typically represents a different universe within the multiverse.</p>
+        </li>
+        <li>
+            <h3>Howard the Duck Universe (Earth-79101)</h3>
+            <p><strong>Duration:</strong> 1986</p>
+            <p><strong>Description:</strong> The universe of the 1986 film "Howard the Duck." It's a standalone universe with a unique and quirky tone.</p>
+        </li>
+    </ul>
+</div>
+
+<footer>
+    <p>&copy; 2023 Marvel Multiverse Explorer. A demo webpage exploring Marvel universes and their timelines.</p>
+</footer>
+
+</body>
+</html>

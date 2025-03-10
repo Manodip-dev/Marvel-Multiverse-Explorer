@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marvel Movies - Multiverse Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Lexend', sans-serif;
+            color: #003049;
+            background-color: #eae2b7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            max-width: 960px;
+            padding: 20px 40px;
+            background-color: #fcbf49;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2em;
+            margin: 0;
+            color: #003049;
+        }
+
+        .content-container {
+            max-width: 960px;
+            width: 100%;
+            background-color: white;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .section-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .section-button {
+            padding: 12px 25px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #f77f00;
+            color: white;
+            font-family: 'Lexend', sans-serif;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-button:hover {
+            background-color: #d62828;
+        }
+
+        .section-button:active {
+            transform: scale(0.95);
+        }
+
+        .section-button.active {
+            background-color: #d62828;
+        }
+
+        .content-section {
+            display: block;
+        }
+
+        .content-section.hidden {
+            display: none;
+        }
+
+
+        .universe-section {
+            margin-bottom: 25px;
+        }
+
+        .universe-title {
+            font-size: 1.6em;
+            color: #d62828;
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+            border-left: 5px solid #f77f00;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            display: flex; /* For aligning title and watched status */
+            justify-content: space-between; /* Space between title elements */
+            align-items: center; /* Vertically align items in title */
+            position: relative; /* Position relative for clear button */
+            flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+        }
+
+        .universe-title:hover {
+            background-color: #f0f0f0;
+        }
+
+        .universe-title:active {
+            transform: scale(0.97);
+        }
+
+        .watched-status {
+            display: flex;
+            align-items: center; /* Vertically align items */
+            gap: 12px;
+        }
+
+        .watched-count {
+            font-size: 0.9em;
+            color: #777;
+            padding-bottom: 2px; /* Space for underline */
+            /* Remove border-bottom, use background-image instead */
+            background-image: linear-gradient(to right, #f77f00 0%, #f77f00 0%, transparent 0%, transparent 100%); /* Initial state 0% orange */
+            background-repeat: no-repeat;
+            background-position: 0 100%; /* Bottom underline */
+            background-size: 100% 2px; /* Underline thickness */
+            line-height: 1; /* Ensure line height doesn't add extra space */
+            transition: background-image 0.3s ease, color 0.3s ease; /* Smooth transition for underline and color */
+        }
+
+        .watched-count.partial {
+            /* Color will be set dynamically by background-image */
+            color: #d62828; /* Text color for partial watch */
+        }
+        .watched-count.full {
+            /* Color will be set dynamically by background-image */
+            color: #28a745; /* Green color for fully watched */
+            font-weight: bold;
+        }
+        .watched-count.full,
+        .watched-count.full.partial { /* In case both classes are somehow applied */
+            background-image: linear-gradient(to right, #28a745 100%, #d3d3d3 100%); /* Green underline when fully watched */
+        }
+
+
+        .clear-watched-button {
+            padding: 15px 15px;
+            border: none;
+            border-radius: 50%; /* Make it rounded */
+            background-color: #eae2b7; /* Light background color */
+            color: #003049; /* Icon color similar to body text */
+            font-family: 'Lexend', sans-serif;
+            font-size: 1.0em; /* Adjust icon size if needed */
+            cursor: pointer;
+            opacity: 0.9;
+            transition: opacity 0.2s ease, background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+            display: none;        /* Hidden by default - ADJUSTED HERE */
+            align-items: center;    /* Vertically center icon */
+            justify-content: center; /* Horizontally center icon */
+            width: 24px;         /* Fixed width and height for rounded button */
+            height: 24px;
+            line-height: 1;       /* Reset line height to center icon properly */
+            margin-left: 10px;    /* Space between text and icon button */
+        }
+
+        .watched-status.clear-visible .clear-watched-button { /* To show when needed - ADDED HERE */
+            display: flex; /* Or inline-flex if you prefer */
+        }
+
+
+        .clear-watched-button:hover {
+            opacity: 1;
+            background-color: #f0f0f0; /* Slightly lighter on hover */
+        }
+
+        .clear-watched-button:active {
+            transform: scale(0.95); /* Click animation */
+        }
+
+
+        .movie-list-container {
+            max-height: 150px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .movie-list-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .movie-list-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .movie-list-container::-webkit-scrollbar-thumb {
+            background: #d62828;
+            border-radius: 4px;
+        }
+
+        .movie-list-container::-webkit-scrollbar-thumb:hover {
+            background: #b32020;
+        }
+
+
+        .movie-list {
+            padding-left: 20px;
+            line-height: 1.7;
+            display: none;
+        }
+
+        .movie-list ul {
+            list-style-type: none; /* Remove default list style */
+            padding-left: 0; /* Reset padding for ul */
+        }
+
+        .movie-item {
+            margin-bottom: 8px;
+        }
+
+        .movie-item label { /* Label to wrap checkbox and text - ADDED HERE */
+            display: flex;       /* Make label a flex container */
+            align-items: center;   /* Vertically align items in label */
+            cursor: pointer;      /* Label is clickable */
+            padding: 5px 0;      /* Add some vertical padding to label for click area */
+            margin-left: -3px; /* minor visual alignment tweak */
+        }
+
+
+        .movie-checkbox {
+            appearance: none; /* Remove default checkbox styling */
+            -webkit-appearance: none; /* For Safari */
+            -moz-appearance: none; /* For Firefox */
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f77f00; /* Orange border */
+            background-color: white;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative; /* For active animation */
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+            margin-right: 8px; /* Space between checkbox and text */
+        }
+
+        .movie-checkbox:hover {
+            border-color: #d62828; /* Dark red on hover */
+        }
+
+        .movie-checkbox:checked {
+            background-color: #d62828; /* Dark red when checked */
+            border-color: #d62828;
+        }
+
+        .movie-checkbox:checked::before { /* Checkmark pseudo-element */
+            content: '\2713'; /* Unicode checkmark character */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+        }
+
+        .movie-checkbox:active {
+            transform: scale(0.9); /* Click animation */
+        }
+
+
+        .movie-item-title {
+            font-weight: bold;
+        }
+
+        .movie-item-date {
+            font-style: italic;
+            color: #777;
+        }
+
+
+        footer {
+            width: 100%; /* Full width footer */
+            max-width: 960px;
+            padding: 20px 0px;
+            background-color: #fcbf49;
+            border-radius:  0 0 10px 10px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+            text-align: center; /* Center text in footer */
+            color: #003049;
+            font-size: 0.9em;
+            margin-top: 20px; /* Added margin to separate from content */
+            display: flex; /* Ensure footer content is centered in box */
+            justify-content: center; /* Center content horizontally */
+            align-items: center; /* Center content vertically if needed */
+            flex-direction: column; /* Stack footer content if you add more lines */
+        }
+
+        footer p { /* Explicitly target the <p> inside footer if needed */
+            margin: 0; /* Reset default paragraph margins if needed */
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+            }
+            header h1 {
+                font-size: 1.8em;
+            }
+            .content-container {
+                padding: 20px;
+            }
+            .section-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .section-button {
+                margin: 10px 0;
+                width: 90%;
+            }
+            .universe-title {
+                font-size: 1.4em;
+                padding: 8px;
+                flex-direction: row; /* Keep in row on mobile */
+                align-items: center; /* Vertically center items in title on mobile */
+                justify-content: space-between; /* Keep space between items */
+            }
+            .watched-status {
+                margin-top: 0; /* Removed margin on mobile */
+            }
+            .watched-count {
+                background-size: 100% 1.5px; /* Adjust underline thickness for mobile if needed */
+                margin-right: 30px; /* Adjusted margin on mobile */
+            }
+            .clear-watched-button {
+                position: static; /* Keep static on mobile */
+                margin-left: 5px;    /* Slightly less margin on mobile */
+                width: 24px;        /* Fixed width and height */
+                height: 24px;
+                font-size: 0.7em;   /* Smaller icon on mobile */
+
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Marvel Movies</h1>
+    </header>
+
+    <div class="content-container">
+        <div class="section-buttons">
+            <button class="section-button active" id="live-action-button" onclick="showContent('live-action')">Live-Action Marvel Content</button>
+            <button class="section-button" id="animated-button" onclick="showContent('animated')">Animated Marvel Content</button>
+        </div>
+
+    <div id="live-action-content" class="content-section">
+            <div class="universe-section">
+                <h2 class="universe-title" onclick="toggleMovieList('mcu-movies', 'live-action-content')">
+                    Marvel Cinematic Universe (MCU)
+                    <div class="watched-status">
+                        <span class="watched-count" id="mcu-watched-count">0/0 Watched</span>
+                        <button class="clear-watched-button" onclick="clearWatchedStatus('mcu-movies')" title="Reset watched status for MCU">&#x27F3;</button>
+                    </div>
+                </h2>
+                <div class="movie-list" id="mcu-movies">
+                    <div class="movie-list-container">
+                        <ul>
+                            <li class="movie-item">
+                                <label>  <input type="checkbox" class="movie-checkbox" id="mcu-iron-man">
+                                <span><span class="movie-item-title">Iron Man</span> - <span class="movie-item-date">May 2, 2008</span></span> </label>
+                            </li>
+                           <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-incredible-hulk">
+                                <span><span class="movie-item-title">The Incredible Hulk</span> - <span class="movie-item-date">June 13, 2008</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-iron-man-2">
+                                <span><span class="movie-item-title">Iron Man 2</span> - <span class="movie-item-date">May 7, 2010</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-thor">
+                                <span><span class="movie-item-title">Thor</span> - <span class="movie-item-date">May 6, 2011</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-captain-america-first-avenger">
+                                <span><span class="movie-item-title">Captain America: The First Avenger</span> - <span class="movie-item-date">July 22, 2011</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-the-avengers">
+                                <span><span class="movie-item-title">The Avengers</span> - <span class="movie-item-date">May 4, 2012</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-iron-man-3">
+                                <span><span class="movie-item-title">Iron Man 3</span> - <span class="movie-item-date">May 3, 2013</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-thor-dark-world">
+                                <span><span class="movie-item-title">Thor: The Dark World</span> - <span class="movie-item-date">November 8, 2013</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-captain-america-winter-soldier">
+                                <span><span class="movie-item-title">Captain America: The Winter Soldier</span> - <span class="movie-item-date">April 4, 2014</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-guardians-of-the-galaxy">
+                                <span><span class="movie-item-title">Guardians of the Galaxy</span> - <span class="movie-item-date">August 1, 2014</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-avengers-age-of-ultron">
+                                <span><span class="movie-item-title">Avengers: Age of Ultron</span> - <span class="movie-item-date">May 1, 2015</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-ant-man">
+                                <span><span class="movie-item-title">Ant-Man</span> - <span class="movie-item-date">July 17, 2015</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-captain-america-civil-war">
+                                <span><span class="movie-item-title">Captain America: Civil War</span> - <span class="movie-item-date">May 6, 2016</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-doctor-strange">
+                                <span><span class="movie-item-title">Doctor Strange</span> - <span class="movie-item-date">November 4, 2016</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-guardians-of-the-galaxy-vol-2">
+                                <span><span class="movie-item-title">Guardians of the Galaxy Vol. 2</span> - <span class="movie-item-date">May 5, 2017</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-spider-man-homecoming">
+                                <span><span class="movie-item-title">Spider-Man: Homecoming</span> - <span class="movie-item-date">July 7, 2017</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-thor-ragnarok">
+                                <span><span class="movie-item-title">Thor: Ragnarok</span> - <span class="movie-item-date">November 3, 2017</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-black-panther">
+                                <span><span class="movie-item-title">Black Panther</span> - <span class="movie-item-date">February 16, 2018</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-avengers-infinity-war">
+                                <span><span class="movie-item-title">Avengers: Infinity War</span> - <span class="movie-item-date">April 27, 2018</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-ant-man-and-the-wasp">
+                                <span><span class="movie-item-title">Ant-Man and the Wasp</span> - <span class="movie-item-date">July 6, 2018</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-captain-marvel">
+                                <span><span class="movie-item-title">Captain Marvel</span> - <span class="movie-item-date">March 8, 2019</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-avengers-endgame">
+                                <span><span class="movie-item-title">Avengers: Endgame</span> - <span class="movie-item-date">April 26, 2019</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-spider-man-far-from-home">
+                                <span><span class="movie-item-title">Spider-Man: Far From Home</span> - <span class="movie-item-date">July 2, 2019</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-black-widow">
+                                <span><span class="movie-item-title">Black Widow</span> - <span class="movie-item-date">July 9, 2021</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-shang-chi">
+                                <span><span class="movie-item-title">Shang-Chi and the Legend of the Ten Rings</span> - <span class="movie-item-date">September 3, 2021</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-eternals">
+                                <span><span class="movie-item-title">Eternals</span> - <span class="movie-item-date">November 5, 2021</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-spider-man-no-way-home">
+                                <span><span class="movie-item-title">Spider-Man: No Way Home</span> - <span class="movie-item-date">December 17, 2021</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-doctor-strange-multiverse-of-madness">
+                                <span><span class="movie-item-title">Doctor Strange in the Multiverse of Madness</span> - <span class="movie-item-date">May 6, 2022</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-thor-love-and-thunder">
+                                <span><span class="movie-item-title">Thor: Love and Thunder</span> - <span class="movie-item-date">July 8, 2022</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-black-panther-wakanda-forever">
+                                <span><span class="movie-item-title">Black Panther: Wakanda Forever</span> - <span class="movie-item-date">November 11, 2022</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-ant-man-quantumania">
+                                <span><span class="movie-item-title">Ant-Man and the Wasp: Quantumania</span> - <span class="movie-item-date">February 17, 2023</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-guardians-of-the-galaxy-vol-3">
+                                <span><span class="movie-item-title">Guardians of the Galaxy Vol. 3</span> - <span class="movie-item-date">May 5, 2023</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-the-marvels">
+                                <span><span class="movie-item-title">The Marvels</span> - <span class="movie-item-date">November 10, 2023</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-deadpool-wolverine">
+                                <span><span class="movie-item-title">Deadpool & Wolverine</span> - <span class="movie-item-date">July 26, 2024</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-captain-america-brave-new-world">
+                                <span><span class="movie-item-title">Captain America: Brave New World</span> - <span class="movie-item-date">February 14, 2025</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-thunderbolts">
+                                <span><span class="movie-item-title">Thunderbolts</span> - <span class="movie-item-date">July 25, 2025</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-fantastic-four">
+                                <span><span class="movie-item-title">Fantastic Four</span> - <span class="movie-item-date">May 2, 2025</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-blade">
+                                <span><span class="movie-item-title">Blade</span> - <span class="movie-item-date">November 7, 2025</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-avengers-kang-dynasty">
+                                <span><span class="movie-item-title">Avengers 5: The Kang Dynasty</span> - <span class="movie-item-date">May 1, 2026</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-avengers-secret-wars">
+                                <span><span class="movie-item-title">Avengers 6: Secret Wars</span> - <span class="movie-item-date">May 7, 2027</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-wandavision-s1">
+                                <span><span class="movie-item-title">WandaVision (Season 1)</span> - <span class="movie-item-date">January 15, 2021</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-falcon-winter-soldier-s1">
+                                <span><span class="movie-item-title">The Falcon and the Winter Soldier (Season 1)</span> - <span class="movie-item-date">March 19, 2021</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-loki-s1">
+                                <span><span class="movie-item-title">Loki (Season 1)</span> - <span class="movie-item-date">June 9, 2021</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-hawkeye-s1">
+                                <span><span class="movie-item-title">Hawkeye (Season 1)</span> - <span class="movie-item-date">November 24, 2021</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-moon-knight-s1">
+                                <span><span class="movie-item-title">Moon Knight (Season 1)</span> - <span class="movie-item-date">March 30, 2022</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-ms-marvel-s1">
+                                <span><span class="movie-item-title">Ms. Marvel (Season 1)</span> - <span class="movie-item-date">June 8, 2022</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-she-hulk-s1">
+                                <span><span class="movie-item-title">She-Hulk: Attorney at Law (Season 1)</span> - <span class="movie-item-date">August 18, 2022</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-werewolf-by-night">
+                                <span><span class="movie-item-title">Werewolf by Night</span> - <span class="movie-item-date">October 7, 2022</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-guardians-holiday-special">
+                                <span><span class="movie-item-title">The Guardians of the Galaxy Holiday Special</span> - <span class="movie-item-date">November 25, 2022</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-secret-invasion-s1">
+                                <span><span class="movie-item-title">Secret Invasion (Season 1)</span> - <span class="movie-item-date">June 21, 2023</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-loki-s2">
+                                <span><span class="movie-item-title">Loki (Season 2)</span> - <span class="movie-item-date">October 5, 2023</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-echo-s1">
+                                <span><span class="movie-item-title">Echo (Season 1)</span> - <span class="movie-item-date">January 9, 2024</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-agatha-darkhold-diaries">
+                                <span><span class="movie-item-title">Agatha: Darkhold Diaries</span> - <span class="movie-item-date">Late 2024</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-daredevil-born-again">
+                                <span><span class="movie-item-title">Daredevil: Born Again</span> - <span class="movie-item-date">March 2025</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-ironheart">
+                                <span><span class="movie-item-title">Ironheart</span> - <span class="movie-item-date">2025</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mcu-wonder-man">
+                                <span><span class="movie-item-title">Wonder Man</span> - <span class="movie-item-date">TBA</span></span> </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="universe-section">
+                <h2 class="universe-title" onclick="toggleMovieList('ssu-movies', 'live-action-content')">
+                    Sony's Spider-Man Universe (SSU)
+                    <div class="watched-status">
+                        <span class="watched-count" id="ssu-watched-count">0/0 Watched</span>
+                        <button class="clear-watched-button" onclick="clearWatchedStatus('ssu-movies')" title="Reset watched status for SSU">&#x27F3;</button>
+                    </div>
+                </h2>
+                <div class="movie-list" id="ssu-movies">
+                    <div class="movie-list-container">
+                        <ul>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="ssu-venom">
+                                <span><span class="movie-item-title">Venom</span> - <span class="movie-item-date">October 5, 2018</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="ssu-venom-carnage">
+                                <span><span class="movie-item-title">Venom: Let There Be Carnage</span> - <span class="movie-item-date">October 1, 2021</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="ssu-morbius">
+                                <span><span class="movie-item-title">Morbius</span> - <span class="movie-item-date">April 1, 2022</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="ssu-madame-web">
+                                <span><span class="movie-item-title">Madame Web</span> - <span class="movie-item-date">February 14, 2024</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="ssu-kraven-hunter">
+                                <span><span class="movie-item-title">Kraven the Hunter</span> - <span class="movie-item-date">August 30, 2024</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="ssu-venom-last-dance">
+                                <span><span class="movie-item-title">Venom: The Last Dance</span> - <span class="movie-item-date">October 25, 2024</span></span> </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="universe-section">
+                <h2 class="universe-title" onclick="toggleMovieList('fox-movies', 'live-action-content')">
+                    20th Century Fox X-Men Universe
+                    <div class="watched-status">
+                        <span class="watched-count" id="fox-watched-count">0/0 Watched</span>
+                        <button class="clear-watched-button" onclick="clearWatchedStatus('fox-movies')" title="Reset watched status for Fox Universe">&#x27F3;</button>
+                    </div>
+                </h2>
+                <div class="movie-list" id="fox-movies">
+                    <div class="movie-list-container">
+                        <ul>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-blade">
+                                <span><span class="movie-item-title">Blade</span> - <span class="movie-item-date">August 21, 1998</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-x-men">
+                                <span><span class="movie-item-title">X-Men</span> - <span class="movie-item-date">July 14, 2000</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-blade-2">
+                                <span><span class="movie-item-title">Blade II</span> - <span class="movie-item-date">March 22, 2002</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-spider-man">
+                                <span><span class="movie-item-title">Spider-Man</span> - <span class="movie-item-date">May 3, 2002</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-x2">
+                                <span><span class="movie-item-title">X2</span> - <span class="movie-item-date">May 2, 2003</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-daredevil">
+                                <span><span class="movie-item-title">Daredevil</span> - <span class="movie-item-date">February 14, 2003</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-hulk">
+                                <span><span class="movie-item-title">Hulk</span> - <span class="movie-item-date">June 20, 2003</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-punisher">
+                                <span><span class="movie-item-title">The Punisher</span> - <span class="movie-item-date">April 16, 2004</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-spider-man-2">
+                                <span><span class="movie-item-title">Spider-Man 2</span> - <span class="movie-item-date">June 30, 2004</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-blade-trinity">
+                                <span><span class="movie-item-title">Blade: Trinity</span> - <span class="movie-item-date">December 8, 2004</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-elektra">
+                                <span><span class="movie-item-title">Elektra</span> - <span class="movie-item-date">January 14, 2005</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-fantastic-four-2005">
+                                <span><span class="movie-item-title">Fantastic Four</span> - <span class="movie-item-date">July 8, 2005</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-x-men-last-stand">
+                                <span><span class="movie-item-title">X-Men: The Last Stand</span> - <span class="movie-item-date">May 26, 2006</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-ghost-rider">
+                                <span><span class="movie-item-title">Ghost Rider</span> - <span class="movie-item-date">February 16, 2007</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-spider-man-3">
+                                <span><span class="movie-item-title">Spider-Man 3</span> - <span class="movie-item-date">May 4, 2007</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-fantastic-four-silver-surfer">
+                                <span><span class="movie-item-title">Fantastic Four: Rise of the Silver Surfer</span> - <span class="movie-item-date">June 15, 2007</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-punisher-war-zone">
+                                <span><span class="movie-item-title">Punisher: War Zone</span> - <span class="movie-item-date">December 5, 2008</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-x-men-origins-wolverine">
+                                <span><span class="movie-item-title">X-Men Origins: Wolverine</span> - <span class="movie-item-date">May 1, 2009</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-ghost-rider-spirit-vengeance">
+                                <span><span class="movie-item-title">Ghost Rider: Spirit of Vengeance</span> - <span class="movie-item-date">February 17, 2012</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-amazing-spider-man">
+                                <span><span class="movie-item-title">The Amazing Spider-Man</span> - <span class="movie-item-date">July 3, 2012</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-wolverine">
+                                <span><span class="movie-item-title">The Wolverine</span> - <span class="movie-item-date">July 26, 2013</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-amazing-spider-man-2">
+                                <span><span class="movie-item-title">The Amazing Spider-Man 2</span> - <span class="movie-item-date">May 2, 2014</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-x-men-days-future-past">
+                                <span><span class="movie-item-title">X-Men: Days of Future Past</span> - <span class="movie-item-date">May 23, 2014</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-fantastic-four-2015">
+                                <span><span class="movie-item-title">Fantastic Four</span> - <span class="movie-item-date">August 7, 2015</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-deadpool">
+                                <span><span class="movie-item-title">Deadpool</span> - <span class="movie-item-date">February 12, 2016</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-x-men-apocalypse">
+                                <span><span class="movie-item-title">X-Men: Apocalypse</span> - <span class="movie-item-date">May 27, 2016</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="fox-logan">
+                                <span><span class="movie-item-title">Logan</span> - <span class="movie-item-date">March 3, 2017</span></span> </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+             <div class="universe-section">
+                <h2 class="universe-title" onclick="toggleMovieList('netflix-movies', 'live-action-content')">
+                    Netflix Marvel Universe
+                    <div class="watched-status">
+                        <span class="watched-count" id="netflix-watched-count">0/0 Watched</span>
+                        <button class="clear-watched-button" onclick="clearWatchedStatus('netflix-movies')" title="Reset watched status for Netflix Universe">&#x27F3;</button>
+                    </div>
+                </h2>
+                <div class="movie-list" id="netflix-movies">
+                    <div class="movie-list-container">
+                        <ul>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="netflix-daredevil-s1">
+                                <span><span class="movie-item-title">Daredevil (Season 1)</span> - <span class="movie-item-date">April 10, 2015</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="netflix-jessica-jones-s1">
+                                <span><span class="movie-item-title">Jessica Jones (Season 1)</span> - <span class="movie-item-date">November 20, 2015</span></span> </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+         <div id="animated-content" class="content-section hidden">
+            <div class="universe-section">
+                <h2 class="universe-title" onclick="toggleMovieList('spiderverse-movies', 'animated-content')">
+                    The Spider-Verse (Various Earths)
+                    <div class="watched-status">
+                        <span class="watched-count" id="spiderverse-watched-count">0/0 Watched</span>
+                        <button class="clear-watched-button" onclick="clearWatchedStatus('spiderverse-movies')" title="Reset watched status for Spider-Verse">&#x27F3;</button>
+                    </div>
+                </h2>
+                <div class="movie-list" id="spiderverse-movies">
+                    <div class="movie-list-container">
+                        <ul>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="spiderverse-spider-verse">
+                                <span><span class="movie-item-title">Spider-Man: Into the Spider-Verse</span> - <span class="movie-item-date">December 14, 2018</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="spiderverse-across-spider-verse">
+                                <span><span class="movie-item-title">Spider-Man: Across the Spider-Verse</span> - <span class="movie-item-date">May 31, 2023</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="spiderverse-beyond-spider-verse">
+                                <span><span class="movie-item-title">Spider-Man: Beyond the Spider-Verse</span> - <span class="movie-item-date">(TBA)</span></span> </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="universe-section">
+                <h2 class="universe-title" onclick="toggleMovieList('mau-movies', 'animated-content')">
+                    Marvel Animated Universe (Various Earths)
+                    <div class="watched-status">
+                        <span class="watched-count" id="mau-watched-count">0/0 Watched</span>
+                        <button class="clear-watched-button" onclick="clearWatchedStatus('mau-movies')" title="Reset watched status for MAU">&#x27F3;</button>
+                    </div>
+                </h2>
+                <div class="movie-list" id="mau-movies">
+                    <div class="movie-list-container">
+                        <ul>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mau-x-men-animated-series">
+                                <span><span class="movie-item-title">X-Men: The Animated Series</span> - <span class="movie-item-date">1992-1997</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mau-spider-man-animated-series">
+                                <span><span class="movie-item-title">Spider-Man: The Animated Series</span> - <span class="movie-item-date">1994-1998</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mau-spectacular-spider-man">
+                                <span><span class="movie-item-title">Spectacular Spider-Man</span> - <span class="movie-item-date">2008-2009</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mau-avengers-earth-mightiest-heroes">
+                                <span><span class="movie-item-title">Avengers: Earth's Mightiest Heroes</span> - <span class="movie-item-date">2010-2012</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="mau-x-men-97">
+                                <span><span class="movie-item-title">X-Men '97</span> - <span class="movie-item-date">2024-Present</span></span> </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="universe-section">
+                <h2 class="universe-title" onclick="toggleMovieList('whatif-movies', 'animated-content')">
+                    What If...? Universe(s) (Various Earths)
+                    <div class="watched-status">
+                        <span class="watched-count" id="whatif-watched-count">0/0 Watched</span>
+                        <button class="clear-watched-button" onclick="clearWatchedStatus('whatif-movies')" title="Reset watched status for What If...?">&#x27F3;</button>
+                    </div>
+                </h2>
+                <div class="movie-list" id="whatif-movies">
+                    <div class="movie-list-container">
+                        <ul>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="whatif-s1">
+                                <span><span class="movie-item-title">What If...? (Season 1)</span> - <span class="movie-item-date">August 11, 2021</span></span> </label>
+                            </li>
+                            <li class="movie-item">
+                                <label> <input type="checkbox" class="movie-checkbox" id="whatif-s2">
+                                <span><span class="movie-item-title">What If...? (Season 2)</span> - <span class="movie-item-date">December 22, 2023</span></span> </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    <footer>
+        <p>&copy; 2023 Marvel Multiverse Explorer. Movie Database Demo.</p>
+    </footer>
+
+    <script>
+        function toggleMovieList(listId, sectionId) {
+            var movieList = document.getElementById(listId);
+            var contentSection = document.getElementById(sectionId);
+            var movieListsInSection = contentSection.querySelectorAll('.movie-list');
+
+            movieListsInSection.forEach(function(list) {
+                if (list.id !== listId) {
+                    list.style.display = 'none';
+                }
+            });
+
+            if (movieList.style.display === "none") {
+                movieList.style.display = "block";
+            } else {
+                movieList.style.display = "none";
+            }
+        }
+
+
+        function showContent(contentType) {
+            var liveActionContent = document.getElementById('live-action-content');
+            var animatedContent = document.getElementById('animated-content');
+            var liveActionButton = document.getElementById('live-action-button');
+            var animatedButton = document.getElementById('animated-button');
+
+            if (contentType === 'live-action') {
+                liveActionContent.classList.remove('hidden');
+                animatedContent.classList.add('hidden');
+                liveActionButton.classList.add('active');
+                animatedButton.classList.remove('active');
+                animatedContent.querySelectorAll('.movie-list').forEach(function(list) {
+                    list.style.display = 'none';
+                });
+            } else if (contentType === 'animated') {
+                animatedContent.classList.remove('hidden');
+                liveActionContent.classList.add('hidden');
+                animatedButton.classList.add('active');
+                liveActionButton.classList.remove('active');
+                liveActionContent.querySelectorAll('.movie-list').forEach(function(list) {
+                    list.style.display = 'none';
+                });
+            }
+             updateWatchedStatus(); // Update watched status when content changes
+        }
+
+        function updateWatchedStatus() {
+            document.querySelectorAll('.universe-section').forEach(function(universeSection) {
+                const universeId = universeSection.querySelector('.movie-list').id;
+                const checkboxes = universeSection.querySelectorAll('.movie-checkbox');
+                let watchedCount = 0;
+                let isAnyChecked = false; // Flag to track if any checkbox is checked
+                checkboxes.forEach(function(checkbox) {
+                    if (checkbox.checked) {
+                        watchedCount++;
+                        isAnyChecked = true; // Set flag to true if at least one is checked
+                    }
+                });
+                const totalMovies = checkboxes.length;
+                const percentageWatched = totalMovies === 0 ? 0 : Math.round((watchedCount / totalMovies) * 100);
+
+                const countElement = universeSection.querySelector(`#${universeId.replace('movies', 'watched-count')}`);
+                const watchedStatusElement = universeSection.querySelector('.watched-status'); // Get watched-status element
+
+
+                if (countElement && watchedStatusElement) {
+                    countElement.textContent = `${watchedCount}/${totalMovies} Watched`;
+
+                    // Calculate gradient percentage for underline
+                    const gradientPercentage = percentageWatched;
+                    countElement.style.backgroundImage = `linear-gradient(to right, #f77f00 ${gradientPercentage}%, #d3d3d3 ${gradientPercentage}%)`; // Use light grey for unwatched part
+
+
+                    countElement.className = 'watched-count'; // Reset class, but keep the gradient style
+                    if (percentageWatched > 0 && percentageWatched < 100) {
+                        countElement.classList.add('partial');
+                        countElement.classList.remove('full'); // Ensure 'full' class is removed
+                         countElement.style.color = '#d62828'; // Set color for partial watch
+                         countElement.style.backgroundImage = `linear-gradient(to right, #f77f00 ${gradientPercentage}%, #d3d3d3 ${gradientPercentage}%)`; // Orange underline
+                    } else if (percentageWatched === 100) {
+                         countElement.classList.add('full');
+                         countElement.classList.remove('partial'); // Ensure 'partial' is removed
+                         countElement.style.color = '#28a745'; // Green text color for full watch
+                         countElement.style.backgroundImage = `linear-gradient(to right, #28a745 100%, #d3d3d3 100%)`; // Green underline for full watch
+                    } else { // percentageWatched === 0
+                        countElement.classList.remove('partial', 'full'); // Remove both classes if 0
+                        countElement.style.color = '#777'; // Default text color
+                        countElement.style.backgroundImage = `linear-gradient(to right, #f77f00 0%, #d3d3d3 0%)`; // No orange underline
+
+                    }
+                    // Toggle clear button visibility based on isAnyChecked flag
+                    if (isAnyChecked) {
+                        watchedStatusElement.classList.add('clear-visible'); // Show clear button if any checkbox is checked
+                    } else {
+                        watchedStatusElement.classList.remove('clear-visible'); // Hide clear button if no checkbox is checked
+                    }
+                }
+            });
+        }
+
+        function clearWatchedStatus(movieListId) {
+            const movieListElement = document.getElementById(movieListId);
+            if (!movieListElement) return;
+
+            const checkboxes = movieListElement.querySelectorAll('.movie-item label .movie-checkbox'); // Select checkboxes inside labels
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                saveCheckboxState(checkbox.id, false); // Update localStorage to reflect unchecked state
+            });
+            updateWatchedStatus(); // Re-calculate and update watched status after clearing
+        }
+
+
+        function saveCheckboxState(checkboxId, isChecked) {
+            localStorage.setItem(checkboxId, isChecked);
+        }
+
+        function loadCheckboxState(checkboxId) {
+            return localStorage.getItem(checkboxId) === 'true';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            showContent('live-action');
+            document.querySelectorAll('.movie-item').forEach(function(movieItem) {
+                const checkbox = movieItem.querySelector('.movie-checkbox');
+                const checkboxId = checkbox.id;
+                const savedState = loadCheckboxState(checkboxId);
+                checkbox.checked = savedState;
+            });
+            updateWatchedStatus();
+
+            document.querySelectorAll('.movie-checkbox').forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    saveCheckboxState(checkbox.id, this.checked);
+                    updateWatchedStatus();
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
